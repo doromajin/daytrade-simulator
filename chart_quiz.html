@@ -382,11 +382,12 @@ function explainOutcome(cur){
       if(price>lineVal+atr*0.1) finalAbove=true;
       else if(price<lineVal-atr*0.1) finalAbove=false;
     }
-    if(finalAbove===true && c0<=before) return `${label}を上抜けて上昇を後押し`;
-    if(finalAbove===false && c0>=before) return `${label}を下抜けて下落を後押し`;
-    if(finalAbove===true && c0>before) return `${label}の上を維持したまま推移`;
-    if(finalAbove===false && c0<before) return `${label}の下を維持したまま推移`;
-    return null;
+    if(finalAbove===null) return null;
+    // 「線の上にいる/上抜けた」は上昇の理由、「線の下にいる/下抜けた」は下落の理由になる。
+    // 実際の方向(up)と整合する場合のみ採用する(方向と矛盾する文を出さない)。
+    if(finalAbove!==up) return null;
+    if(up)  return c0<=before ? `${label}を上抜けて上昇を後押し` : `${label}の上を維持したまま推移`;
+    else    return c0>=before ? `${label}を下抜けて下落を後押し` : `${label}の下を維持したまま推移`;
   };
   const vwapEv=crossEvent(cur.vwap,"VWAP"); if(vwapEv) reasons.push(vwapEv);
   const ma25Ev=crossEvent(cur.ma25,"MA25"); if(ma25Ev) reasons.push(ma25Ev);
